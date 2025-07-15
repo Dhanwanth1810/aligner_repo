@@ -41,10 +41,12 @@ class cfs_md_coverage #(
     length: coverpoint item.length {
       option.comment = "Length of the MD access";
       bins length_eq_1 = {1};
-      bins length_le_10[9] = {[2 : 10]};
-      bins length_gt_10 = {[11 : $]};
+      bins length_le_10[2] = {[2 : 3]};  // Adjusted to only include values 2 and 3
+      // Removed previous [9] slice as higher values are now ignored
+      // bins length_gt_10 removed since >3 is ignored
 
       illegal_bins length_lt_1 = {0};
+      ignore_bins length_gt_3 = {[4 : $]};
     }
 
     prev_item_delay: coverpoint item.prev_item_delay {

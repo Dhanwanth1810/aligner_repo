@@ -740,6 +740,67 @@ class cfs_algn_model extends uvm_component implements uvm_ext_reset_handler;
   endtask
 
   //Task for performing the align logic
+  // protected virtual task align();
+  //   cfs_algn_vif vif = env_config.get_vif();
+  //
+  //   forever begin
+  //     int unsigned ctrl_size = reg_block.CTRL.SIZE.get_mirrored_value();
+  //     int unsigned ctrl_offset = reg_block.CTRL.OFFSET.get_mirrored_value();
+  //
+  //     uvm_wait_for_nba_region();
+  //
+  //     if (ctrl_size <= get_buffer_data_size()) begin
+  //       while (ctrl_size <= get_buffer_data_size()) begin
+  //         cfs_md_item_mon tx_item = cfs_md_item_mon::type_id::create("tx_item", this);
+  //
+  //         tx_item.offset = ctrl_offset;
+  //
+  //         void'(tx_item.begin_tr(buffer[0].get_begin_time()));
+  //
+  //         while (tx_item.data.size() != ctrl_size) begin
+  //           cfs_md_item_mon buffer_item = buffer.pop_front();
+  //
+  //           if (tx_item.data.size() + buffer_item.data.size() <= ctrl_size) begin
+  //
+  //             foreach (buffer_item.data[idx]) begin
+  //               tx_item.data.push_back(buffer_item.data[idx]);
+  //             end
+  //
+  //             if (tx_item.data.size() == ctrl_size) begin
+  //               tx_item.end_tr(buffer_item.get_end_time());
+  //
+  //               push_to_tx_fifo(tx_item);
+  //             end
+  //           end else begin
+  //             int unsigned num_bytes_needed = ctrl_size - tx_item.data.size();
+  //
+  //             cfs_md_item_mon splitted_items[$];
+  //
+  //             split(num_bytes_needed, buffer_item, splitted_items);
+  //
+  //             buffer.push_front(splitted_items[1]);
+  //             buffer.push_front(splitted_items[0]);
+  //             begin
+  //               cfs_algn_split_info info = cfs_algn_split_info::type_id::create("info", this);
+  //
+  //               info.ctrl_offset      = ctrl_offset;
+  //               info.ctrl_size        = ctrl_size;
+  //               info.md_offset        = buffer_item.offset;
+  //               info.md_size          = buffer_item.data.size();
+  //               info.num_bytes_needed = num_bytes_needed;
+  //
+  //               port_out_split_info.write(info);
+  //             end
+  //           end
+  //         end
+  //
+  //       end
+  //     end else begin
+  //       @(posedge vif.clk);
+  //     end
+  //   end
+  // endtask
+  //
   protected virtual task align();
     cfs_algn_vif vif = env_config.get_vif();
 
@@ -750,6 +811,8 @@ class cfs_algn_model extends uvm_component implements uvm_ext_reset_handler;
       uvm_wait_for_nba_region();
 
       if (ctrl_size <= get_buffer_data_size()) begin
+
+        $display("ctrl_size = %0d, buffer_data_size = %0d", ctrl_size, get_buffer_data_size());
         while (ctrl_size <= get_buffer_data_size()) begin
           cfs_md_item_mon tx_item = cfs_md_item_mon::type_id::create("tx_item", this);
 
@@ -768,7 +831,15 @@ class cfs_algn_model extends uvm_component implements uvm_ext_reset_handler;
 
               if (tx_item.data.size() == ctrl_size) begin
                 tx_item.end_tr(buffer_item.get_end_time());
-
+                begin
+                  cfs_algn_split_info info = cfs_algn_split_info::type_id::create("info", this);
+                  info.ctrl_offset      = ctrl_offset;
+                  info.ctrl_size        = ctrl_size;
+                  info.md_offset        = buffer_item.offset;
+                  info.md_size          = buffer_item.data.size();
+                  info.num_bytes_needed = 0;
+                  port_out_split_info.write(info);
+                end
                 push_to_tx_fifo(tx_item);
               end
             end else begin
@@ -780,6 +851,7 @@ class cfs_algn_model extends uvm_component implements uvm_ext_reset_handler;
 
               buffer.push_front(splitted_items[1]);
               buffer.push_front(splitted_items[0]);
+
               begin
                 cfs_algn_split_info info = cfs_algn_split_info::type_id::create("info", this);
 
@@ -788,7 +860,6 @@ class cfs_algn_model extends uvm_component implements uvm_ext_reset_handler;
                 info.md_offset        = buffer_item.offset;
                 info.md_size          = buffer_item.data.size();
                 info.num_bytes_needed = num_bytes_needed;
-
                 port_out_split_info.write(info);
               end
             end

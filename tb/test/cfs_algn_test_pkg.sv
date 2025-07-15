@@ -20,6 +20,7 @@ package cfs_algn_test_pkg;
   `include "cfs_algn_test_base.sv"
   `include "cfs_algn_test_reg_access.sv"
   `include "cfs_algn_test_random.sv"
+  `include "cfs_algn_test_ctrl4_off0_two_pkts.sv"
 
   //manual apb tests included below
   `include "../test/apb_tests/cfs_algn_apb_tests_mapped_unmapped.sv"
@@ -36,7 +37,8 @@ package cfs_algn_test_pkg;
   `include "../test/md_tests/cfs_algn_md_tests_3_2_2.sv"
   `include "../test/md_tests/cfs_algn_md_tests_3_2_3.sv"
   `include "../test/md_tests/cfs_algn_md_tests_3_2_4.sv"
-
+  `include "../test/md_tests/cfs_algn_md_tests_size0.sv"
+  `include "../test/md_tests/cfs_algn_md_tests_nbn3.sv"
   //manual interrupt tests
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_1.sv"
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_2.sv"
@@ -54,6 +56,7 @@ package cfs_algn_test_pkg;
   //manual power and reset tests
   `include "../test/pwr_rst_tests/cfs_algn_rst_tests_3_5_1.sv"
   `include "../test/pwr_rst_tests/cfs_algn_rst_tests_3_5_2.sv"
+  `include "../test/pwr_rst_tests/cfs_algn_clock_reset_during_apb_access.sv"
 endpackage
 
 `endif
