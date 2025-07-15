@@ -6,7 +6,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 `ifndef CFS_ALGN_COVERAGE_SV
-`define CFS_ALGN_COVERAGE_SV
+`define CFS_ALGN_COVERAGE_SV 
 
 `uvm_analysis_imp_decl(_in_split_info)
 
@@ -23,7 +23,7 @@ class cfs_algn_coverage extends uvm_component implements uvm_ext_reset_handler;
     }
 
     ctrl_size: coverpoint info.ctrl_size {
-      option.comment = "Value of CTRL.SIZE"; bins values[] = {[1 : 4]};
+      option.comment = "Value of CTRL.SIZE"; bins values[] = {[1 : 4]}; ignore_bins i_size = {3};
     }
 
     md_offset: coverpoint info.md_offset {
@@ -38,8 +38,11 @@ class cfs_algn_coverage extends uvm_component implements uvm_ext_reset_handler;
       option.comment = "Number of bytes needed during the split"; bins values[] = {[1 : 3]};
     }
 
+    //TODO: other combinations should be ignored from this cross
     all : cross ctrl_offset, ctrl_size, md_offset, md_size, num_bytes_needed{
-      ignore_bins ignore_ctrl = (binsof(ctrl_offset) intersect {0} && binsof(ctrl_size) intersect {
+      ignore_bins ignore_ctrl = 
+
+    (binsof(ctrl_offset) intersect {0} && binsof(ctrl_size) intersect {
         3
       }) || (binsof (ctrl_offset) intersect {1} && binsof (ctrl_size) intersect {
         2, 3, 4
@@ -48,11 +51,111 @@ class cfs_algn_coverage extends uvm_component implements uvm_ext_reset_handler;
       }) || (binsof (ctrl_offset) intersect {3} && binsof (ctrl_size) intersect {
         2, 3, 4
       });
-    //TODO: other combinations should be ignored from this cross
-    }
 
+      // Now apply same logic to md_offset/md_size
+      ignore_bins ignore_md = (binsof (md_offset) intersect {0} && binsof (md_size) intersect {
+        3
+      }) || (binsof (md_offset) intersect {1} && binsof (md_size) intersect {
+        2, 3, 4
+      }) || (binsof (md_offset) intersect {2} && binsof (md_size) intersect {
+        3, 4
+      }) || (binsof (md_offset) intersect {3} && binsof (md_size) intersect {
+        2, 3, 4
+      });
+
+      ignore_bins new_ignore_ctrl_invalid_pairs =
+    (binsof(ctrl_size) intersect {2} && binsof(ctrl_offset) intersect {
+        1, 3
+      }) || (binsof (ctrl_size) intersect {4} && binsof (ctrl_offset) intersect {
+        1, 2, 3
+      });
+
+      // NEW ignore bins based on invalid (size, offset) pairs for md
+      ignore_bins new_ignore_md_invalid_pairs =
+    (binsof(md_size) intersect {2} && binsof(md_offset) intersect {
+        1, 3
+      }) || (binsof (md_size) intersect {4} && binsof (md_offset) intersect {
+        1, 2, 3
+      });
+      ignore_bins illegal_num_bytes_needed_gt_ctrl_size = 
+  binsof(ctrl_size) intersect {2} &&
+  binsof(num_bytes_needed) intersect {
+        3
+      };
+
+      ignore_bins illegal_ctrl_size_1_num_bytes_needed_3 = 
+  binsof(ctrl_size) intersect {1} &&
+  binsof(num_bytes_needed) intersect {
+        3
+      };
+
+      ignore_bins illegal_ctrl_size_1_num_bytes_needed_2 = 
+  binsof(ctrl_size) intersect {1} &&
+  binsof(num_bytes_needed) intersect {2} ||
+  binsof(ctrl_size) intersect {4} && binsof(md_size) intersect {2} && binsof(md_offset) intersect {0}||
+  binsof(num_bytes_needed) intersect {2,3} &&
+  binsof(md_size) intersect {2} ||
+  binsof(num_bytes_needed) intersect {2,3} &&
+  binsof(md_offset) intersect {2} ||
+
+
+  binsof(md_size) intersect {1,3} ||
+  binsof(md_offset) intersect {
+        1, 3
+      };
+
+
+
+
+    }
   endgroup
 
+  /*covergroup cover_split with function sample (cfs_algn_split_info info);
+  option.per_instance = 1;
+
+  ctrl_offset: coverpoint info.ctrl_offset {
+    option.comment = "Value of CTRL.OFFSET"; bins values[] = {[0 : 3]};
+  }
+
+  ctrl_size: coverpoint info.ctrl_size {
+    option.comment = "Value of CTRL.SIZE"; bins values[] = {[1 : 4]};
+  }
+
+  md_offset: coverpoint info.md_offset {
+    option.comment = "Value of the MD transaction offset"; bins values[] = {[0 : 3]};
+  }
+
+  md_size: coverpoint info.md_size {
+    option.comment = "Value of the MD transaction size"; bins values[] = {[1 : 4]};
+  }
+
+  num_bytes_needed: coverpoint info.num_bytes_needed {
+    option.comment = "Number of bytes needed during the split"; bins values[] = {[1 : 3]};
+  }
+
+  all : cross ctrl_offset, ctrl_size, md_offset, md_size, num_bytes_needed {
+    ignore_bins ignore_ctrl = 
+      // ctrl_offset 0
+      (binsof(ctrl_offset) intersect {0} && binsof(ctrl_size) intersect {5}) ||
+      
+      // ctrl_offset 1
+      (binsof(ctrl_offset) intersect {1} && binsof(ctrl_size) intersect {4,5}) ||
+
+      // ctrl_offset 2
+      (binsof(ctrl_offset) intersect {2} && binsof(ctrl_size) intersect {3,4,5}) ||
+
+      // ctrl_offset 3
+      (binsof(ctrl_offset) intersect {3} && binsof(ctrl_size) intersect {2,3,4,5});
+
+    // Existing additional constraints
+    ignore_bins more_invalid = 
+      (binsof(ctrl_offset) intersect {0} && binsof(ctrl_size) intersect {3}) ||
+      (binsof(ctrl_offset) intersect {1} && binsof(ctrl_size) intersect {2,3,4}) ||
+      (binsof(ctrl_offset) intersect {2} && binsof(ctrl_size) intersect {3,4}) ||
+      (binsof(ctrl_offset) intersect {3} && binsof(ctrl_size) intersect {2,3,4});
+  }
+
+endgroup*/
   `uvm_component_utils(cfs_algn_coverage)
 
   function new(string name = "", uvm_component parent);
@@ -104,4 +207,3 @@ class cfs_algn_coverage extends uvm_component implements uvm_ext_reset_handler;
 endclass
 
 `endif
-

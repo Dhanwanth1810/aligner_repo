@@ -19,12 +19,13 @@ class cfs_algn_intr_tests_3_3_2 extends cfs_algn_test_base;
     cfs_md_sequence_slave_response_forever resp_seq;
     cfs_algn_virtual_sequence_3_1_3 cfg_seq;
     cfs_algn_virtual_sequence_rx_crt rx_seq;
-    // cfs_algn_virtual_sequence_rx_err rx_err_seq2;
+    cfs_algn_virtual_sequence_rx_err rx_err_seq;
     cfs_algn_vif vif;
 
     uvm_reg_data_t reg_val;
     uvm_status_e status;
     uvm_reg_field irq_fields[$];
+    virtual cfs_md_if md_rx_vif;
 
     phase.raise_objection(this, "TEST_START");
 
@@ -48,8 +49,8 @@ class cfs_algn_intr_tests_3_3_2 extends cfs_algn_test_base;
     vif = env.env_config.get_vif();
     repeat (50) @(posedge vif.clk);
 
-    // env.model.reg_block.IRQEN.write(status, 32'h0000001f, UVM_FRONTDOOR);
-    // //env.model.reg_block.IRQEN.read(status, reg_val, UVM_FRONTDOOR);
+    env.model.reg_block.IRQEN.write(status, 32'h0000001f, UVM_FRONTDOOR);
+    //env.model.reg_block.IRQEN.read(status, reg_val, UVM_FRONTDOOR);
     //
     env.model.reg_block.CTRL.write(status, 32'h00000001, UVM_FRONTDOOR);
     //env.model.reg_block.CTRL.read(status, reg_val, UVM_FRONTDOOR);
@@ -63,6 +64,27 @@ class cfs_algn_intr_tests_3_3_2 extends cfs_algn_test_base;
       void'(rx_seq.randomize());
       rx_seq.start(env.virtual_sequencer);
     end
+
+    ////////////////////////////////////////////////////////////////////
+
+
+    if (!uvm_config_db#(virtual cfs_md_if)::get(
+            null, "uvm_test_top.env.md_rx_agent", "vif", md_rx_vif
+        )) begin
+      `uvm_fatal("TEST", "Failed to get md_rx_if from config DB")
+    end
+
+
+    for (int i = 0; i < 5; i++) begin
+      rx_err_seq =
+          cfs_algn_virtual_sequence_rx_err::type_id::create($sformatf("rx_err_seq_%0d", i));
+      rx_err_seq.set_sequencer(env.virtual_sequencer);
+      void'(rx_err_seq.randomize());
+
+      rx_err_seq.start(env.virtual_sequencer);
+      md_rx_vif.valid <= 1;
+    end
+    ////////////////////////////////////////////////////////////////////
 
     #(100ns);
 

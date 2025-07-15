@@ -33,11 +33,10 @@ class cfs_apb_coverage extends uvm_ext_coverage #(
 
     length: coverpoint item.length {
       option.comment = "Length of the APB access";
-      bins length_eq_2 = {2};
-      bins length_le_10[8] = {[3 : 10]};
-      bins length_gt_10 = {[11 : $]};
-
-      illegal_bins length_lt_2 = {[$ : 1]};
+      ignore_bins length_eq_2 = {2};
+      ignore_bins length_le_10[8] = {[3 : 10]};
+      ignore_bins length_gt_10 = {[11 : $]};
+      ignore_bins length_lt_2 = {[$ : 1]};
     }
 
     prev_item_delay: coverpoint item.prev_item_delay {
