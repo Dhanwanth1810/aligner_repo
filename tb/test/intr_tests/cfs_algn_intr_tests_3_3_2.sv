@@ -63,8 +63,11 @@ class cfs_algn_intr_tests_3_3_2 extends cfs_algn_test_base;
       rx_seq.set_sequencer(env.virtual_sequencer);
       void'(rx_seq.randomize());
       rx_seq.start(env.virtual_sequencer);
+
+      env.model.reg_block.STATUS.read(status, reg_val, UVM_FRONTDOOR);
     end
 
+    env.model.reg_block.IRQ.read(status, reg_val, UVM_FRONTDOOR);
     ////////////////////////////////////////////////////////////////////
 
 
@@ -88,7 +91,14 @@ class cfs_algn_intr_tests_3_3_2 extends cfs_algn_test_base;
 
     #(100ns);
 
+    env.model.reg_block.STATUS.read(status, reg_val, UVM_FRONTDOOR);
     env.model.reg_block.IRQ.read(status, reg_val, UVM_FRONTDOOR);
+
+    env.model.reg_block.IRQ.write(status, 32'h0000001f, UVM_FRONTDOOR);
+
+
+    env.model.reg_block.IRQ.read(status, reg_val, UVM_FRONTDOOR);
+    env.model.reg_block.STATUS.read(status, reg_val, UVM_FRONTDOOR);
 
     #(500ns);
     phase.drop_objection(this, "TEST_DONE");

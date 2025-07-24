@@ -56,6 +56,24 @@ class cfs_algn_intr_tests_3_3_1 extends cfs_algn_test_base;
 
     #(500ns);
 
+    env.model.reg_block.CTRL.CLR.write(status, 1, UVM_FRONTDOOR);
+    env.model.reg_block.IRQEN.write(status, 32'h0000000f, UVM_FRONTDOOR);
+    vif = env.env_config.get_vif();
+    repeat (50) @(posedge vif.clk);
+
+    // Step 3: Send 200 illegal RX packets
+    for (int i = 0; i < 260; i++) begin
+      rx_err_seq1 =
+          cfs_algn_virtual_sequence_rx_err::type_id::create($sformatf("rx_err_seq_%0d", i));
+      rx_err_seq1.set_sequencer(env.virtual_sequencer);
+      void'(rx_err_seq1.randomize());
+      rx_err_seq1.start(env.virtual_sequencer);
+    end
+
+    #(500ns);
+
+    env.model.reg_block.IRQ.write(status, 32'h00000000, UVM_FRONTDOOR);
+    env.model.reg_block.IRQ.write(status, 32'h0000001f, UVM_FRONTDOOR);
     phase.drop_objection(this, "TEST_DONE");
   endtask
 
