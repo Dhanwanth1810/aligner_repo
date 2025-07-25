@@ -80,6 +80,8 @@ class cfs_algn_intr_tests_3_3_3 extends cfs_algn_test_base;
     #(1000ns);
 
     // env.model.reg_block.IRQ.read(status, reg_val, UVM_FRONTDOOR);
+    env.model.reg_block.IRQ.write(status, 32'h00000000, UVM_FRONTDOOR);
+    env.model.reg_block.IRQ.write(status, 32'h0000001f, UVM_FRONTDOOR);
 
     phase.drop_objection(this, "TEST_DONE");
   endtask

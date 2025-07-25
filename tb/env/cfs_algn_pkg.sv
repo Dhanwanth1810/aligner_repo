@@ -51,6 +51,7 @@
     `include "../virtual_sequence/custom_sequences/cfs_algn_virtual_sequence_3_1_1.sv"
     `include "../virtual_sequence/custom_sequences/cfs_algn_virtual_sequence_3_1_3.sv"
     `include "../virtual_sequence/custom_sequences/cfs_algn_virtual_sequence_ctrl4_off0_two_pkts.sv"
+    `include "../virtual_sequence/custom_sequences/cfs_algn_virtual_sequence_rx_rand_comb.sv"
   endpackage
 
 `endif

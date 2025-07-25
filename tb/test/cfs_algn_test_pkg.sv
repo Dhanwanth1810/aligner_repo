@@ -21,6 +21,7 @@ package cfs_algn_test_pkg;
   `include "cfs_algn_test_reg_access.sv"
   `include "cfs_algn_test_random.sv"
   `include "cfs_algn_test_ctrl4_off0_two_pkts.sv"
+  `include "cfs_algn_test_size_offset_cross_reset_rand.sv"
 
   //manual apb tests included below
   `include "../test/apb_tests/cfs_algn_apb_tests_mapped_unmapped.sv"
@@ -44,7 +45,10 @@ package cfs_algn_test_pkg;
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_2.sv"
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_3.sv"
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_4.sv"
+  `include "../test/intr_tests/cfs_algn_intr_tests_3_3_4_2.sv"
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_5.sv"
+  `include "../test/intr_tests/cfs_algn_intr_tests_3_3_5_2.sv"
+  `include "../test/intr_tests/cfs_algn_int_tests_3_3_6.sv"
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_7.sv"
   `include "../test/intr_tests/cfs_algn_intr_tests_3_3_8.sv"
 

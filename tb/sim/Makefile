@@ -79,8 +79,13 @@ regress:
 report:
 	@echo "[Merging UCDB files into $(UCDB_DIR)/merged.ucdb]"
 	@vcover merge $(UCDB_DIR)/merged.ucdb $(shell find $(UCDB_DIR) -name '*.ucdb' ! -name 'merged.ucdb')
+
+	@echo "[Applying waivers from waivers.do on merged.ucdb]"
+	@vsim -c -viewcov $(UCDB_DIR)/merged.ucdb -do waivers.do
+
 	@echo "[Generating HTML coverage report in $(UCDB_DIR)/coverage_report]"
 	@vcover report -html -output $(UCDB_DIR)/coverage_report -details -verbose $(UCDB_DIR)/merged.ucdb
+
 	@echo "[Opening HTML report with Firefox...]"
 	@firefox $(UCDB_DIR)/coverage_report/index.html >/dev/null 2>&1 || echo "Please open $(UCDB_DIR)/coverage_report/index.html manually."
 

@@ -1,3 +1,4 @@
+
 ///////////////////////////////////////////////////////////////////////////////
 // File:        cfs_algn_intr_tests_3_3_5.sv
 // Author:      Dhanwanth
@@ -5,12 +6,12 @@
 // Description: TX_FIFO_EMPTY is asserted when the FIFO becomes completely
 //              empty
 // ///////////////////////////////////////////////////////////////////////////////
-`ifndef CFS_ALGN_INTR_TESTS_3_3_5_SV
-`define CFS_ALGN_INTR_TESTS_3_3_5_SV
+`ifndef CFS_ALGN_INTR_TESTS_3_3_5_2_SV
+`define CFS_ALGN_INTR_TESTS_3_3_5_2_SV
 
-class cfs_algn_intr_tests_3_3_5 extends cfs_algn_test_base;
+class cfs_algn_intr_tests_3_3_5_2 extends cfs_algn_test_base;
 
-  `uvm_component_utils(cfs_algn_intr_tests_3_3_5)
+  `uvm_component_utils(cfs_algn_intr_tests_3_3_5_2)
 
   function new(string name = "", uvm_component parent);
     super.new(name, parent);
@@ -49,7 +50,7 @@ class cfs_algn_intr_tests_3_3_5 extends cfs_algn_test_base;
     vif = env.env_config.get_vif();
     repeat (50) @(posedge vif.clk);
 
-    // env.model.reg_block.IRQEN.write(status, 32'h0000001f, UVM_FRONTDOOR);
+    env.model.reg_block.IRQEN.write(status, 32'h00000000, UVM_FRONTDOOR);
     // //env.model.reg_block.IRQEN.read(status, reg_val, UVM_FRONTDOOR);
     //
     env.model.reg_block.CTRL.write(status, 32'h00000001, UVM_FRONTDOOR);
@@ -92,7 +93,6 @@ class cfs_algn_intr_tests_3_3_5 extends cfs_algn_test_base;
     //   void'(rx_seq.randomize());
     //   rx_seq.start(env.virtual_sequencer);
     // end
-
 
     env.model.reg_block.IRQ.write(status, 32'h00000000, UVM_FRONTDOOR);
     env.model.reg_block.IRQ.write(status, 32'h0000001f, UVM_FRONTDOOR);
